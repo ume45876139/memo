@@ -19,7 +19,9 @@
 <main>
 <h2>Practice</h2>
 <?php
-$memos = $db -> query('SELECT* FROM memos ORDER BY id LIMIT 0,5');
+$memos = $db -> prepare('SELECT* FROM memos ORDER BY id LIMIT ?,5');
+$memos-> bindParam(1,$_REQUEST['page'],PDO::PARAM_INT);
+$memos->execute();
 ?>
 <article>
     <?php while($memo = $memos -> fetch()): ?>
