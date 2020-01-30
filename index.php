@@ -19,8 +19,17 @@
 <main>
 <h2>Practice</h2>
 <?php
+if(isset($_REQUEST['page']) && is_numeric($_REQUEST['page'])){
+    $page = $_REQUEST['page'];
+}else{
+    $page = 1;
+}
+// 配列だから０からで良い
+$start = 5*($page-1);
+// URLからpage変数を受け取っている
 $memos = $db -> prepare('SELECT* FROM memos ORDER BY id LIMIT ?,5');
-$memos-> bindParam(1,$_REQUEST['page'],PDO::PARAM_INT);
+// バインドは３つのパラメータを決める
+$memos-> bindParam(1,$start,PDO::PARAM_INT);
 $memos->execute();
 ?>
 <article>
@@ -34,8 +43,18 @@ $memos->execute();
         <time><?php print($memo['created_at']); ?></time>
         <hr>
     <?php endwhile;?>
-
-    <p>test</p>
+<?php if($page >=2): ?>
+<a href="index.php?page=<?php print($page-1); ?>"><?php print($page-1); ?>ページ目へ</a>
+<?php endif; ?>
+|
+<?php 
+$counts= $db -> query('SELECT COUNT(*)as cnt FROM memos');
+$count = $counts ->fetch();
+$max_page = floor($count['cnt']/5)+1;
+if ($page < $max_page):
+?> 
+<a href="index.php?page=<?php print($page+1); ?>"><?php print($page+1); ?>ページ目へ</a>
+<?php endif; ?>
 </article>
 </main>
 </body>    
